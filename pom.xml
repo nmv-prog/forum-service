@@ -8,7 +8,7 @@
 		<version>2.7.15</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>telran.java47</groupId>
+	<groupId>telran.java48</groupId>
 	<artifactId>forum-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>forum-service</name>
