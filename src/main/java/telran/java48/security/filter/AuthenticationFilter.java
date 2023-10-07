@@ -50,7 +50,6 @@ public class AuthenticationFilter implements Filter {
 				response.sendError(401);
 				return;
 			}
-
 		}
 		chain.doFilter(request, response);
 	}
