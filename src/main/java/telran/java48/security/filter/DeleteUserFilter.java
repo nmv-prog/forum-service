@@ -18,14 +18,11 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import telran.java48.accounting.dao.UserAccountRepository;
 import telran.java48.accounting.model.UserAccount;
-import telran.java48.post.dao.PostRepository;
-import telran.java48.post.model.Post;
 
 @Component
 @RequiredArgsConstructor
 @Order(40)
-public class DeleteUserOrPostFilter implements Filter {
-	final PostRepository postRepository;
+public class DeleteUserFilter implements Filter {
 	final UserAccountRepository userAccountRepository;
 
 	@Override
@@ -35,29 +32,20 @@ public class DeleteUserOrPostFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) resp;
 
 		if (checkEndPoint(request.getMethod(), request.getServletPath())) {
+			
 			Principal principal = request.getUserPrincipal();
-			String[] arr = request.getServletPath().split("/");
-			String id = arr[arr.length - 1];
 			UserAccount userAccount = userAccountRepository.findById(principal.getName()).get();
-
-			if (arr[1].equalsIgnoreCase("account")) {
-				if (!principal.getName().equalsIgnoreCase(id)) {
-					if (!userAccount.getRoles().contains("ADMINISTRATOR")) {
-						response.sendError(403, "Permission denied");
-						return;
-					}
-				}
+			String[] arr = request.getServletPath().split("/");
+			String user = arr[arr.length - 1];
+			
+			if(!(userAccount.getRoles().contains("ADMINISTRATOR") || principal.getName().equalsIgnoreCase(user))) {
+				response.sendError(403);
+				return;
 			}
 
-			if (arr[1].equalsIgnoreCase("forum")) {
-				Post post = postRepository.findById(id).get();
-				if (!principal.getName().equalsIgnoreCase(post.getAuthor())) {
-					if (!userAccount.getRoles().contains("MODERATOR")) {
-						response.sendError(403, "Permission denied");
-						return;
-					}
-				}
-			}
+
+
+	
 
 		}
 		chain.doFilter(request, response);
@@ -65,8 +53,7 @@ public class DeleteUserOrPostFilter implements Filter {
 	}
 
 	private boolean checkEndPoint(String method, String path) {
-		return HttpMethod.DELETE.matches(method)
-				&& (path.matches("/account/user/\\w+/?") || path.matches("/forum/post/\\w+/?"));
+		return HttpMethod.DELETE.matches(method) && path.matches("/account/user/\\w+/?");
 	}
 
 }

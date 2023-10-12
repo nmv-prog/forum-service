@@ -3,7 +3,6 @@ package telran.java48.security.filter;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
-import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -19,21 +18,15 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import lombok.RequiredArgsConstructor;
 import telran.java48.accounting.dao.UserAccountRepository;
 import telran.java48.accounting.model.UserAccount;
-import telran.java48.post.dao.PostRepository;
-import telran.java48.post.model.Post;
 
 @Component
 @RequiredArgsConstructor
 @Order(10)
 public class AuthenticationFilter implements Filter {
 	final UserAccountRepository userAccountRepository;
-	final PostRepository postRepository;
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
@@ -44,24 +37,6 @@ public class AuthenticationFilter implements Filter {
 //		System.out.println(request.getHeader("Authorization"));
 
 		if (checkEndPoint(request.getMethod(), request.getServletPath())) {
-			
-			String[] arr = request.getServletPath().split("/");
-			
-			
-			if(arr[1].equals("forum")) {
-				List<Post> allPosts = postRepository.findAll();
-				
-				ObjectMapper objectMapper = new ObjectMapper();
-				objectMapper.registerModule(new JavaTimeModule());
-		        String jsonPosts = objectMapper.writeValueAsString(allPosts);
-		        
-		        response.setContentType("application/json");
-		        response.setCharacterEncoding("UTF-8");
-		        response.getWriter().write(jsonPosts);
-		        response.getWriter().flush();
-				return;
-			}
-			
 			try {
 				String[] credentials = getCredentials(request.getHeader("Authorization"));
 				UserAccount userAccount = userAccountRepository.findById(credentials[0])
@@ -80,8 +55,10 @@ public class AuthenticationFilter implements Filter {
 	}
 
 	private boolean checkEndPoint(String method, String path) {
-		return !(HttpMethod.POST.matches(method) && path.matches("/account/register/?")) || 
-				(HttpMethod.GET.matches(method) || HttpMethod.POST.matches(method)) && path.matches("/forum/posts/?");
+		return !(
+				(HttpMethod.POST.matches(method) && path.matches("/account/register/?"))
+				|| path.matches("/forum/posts/\\w+(/\\w+)?/?")
+				);
 	}
 
 	private String[] getCredentials(String header) {
