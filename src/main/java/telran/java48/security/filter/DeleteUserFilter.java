@@ -14,6 +14,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
+import telran.java48.security.model.Role;
 import telran.java48.security.model.User;
 
 @Component
@@ -33,7 +34,7 @@ public class DeleteUserFilter implements Filter {
 			String userName = arr[arr.length - 1];
 			 
 			
-			if(!(user.getRoles().contains("ADMINISTRATOR") || user.getName().equalsIgnoreCase(userName))) {
+			if(!(user.getRoles().contains(Role.ADMINISTRATOR) || user.getName().equalsIgnoreCase(userName))) {
 				response.sendError(403);
 				return;
 			}

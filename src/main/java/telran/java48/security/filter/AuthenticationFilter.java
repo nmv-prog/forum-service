@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import telran.java48.accounting.dao.UserAccountRepository;
 import telran.java48.accounting.model.UserAccount;
 import telran.java48.security.context.SecurityContext;
+import telran.java48.security.model.Role;
 import telran.java48.security.model.User;
 
 @Component
@@ -76,9 +77,9 @@ public class AuthenticationFilter implements Filter {
 
 	private class WrappedRequest extends HttpServletRequestWrapper {
 		String login;
-		Set<String> roles;
+		Set<Role> roles;
 
-		public WrappedRequest(HttpServletRequest request, String login, Set<String> roles) {
+		public WrappedRequest(HttpServletRequest request, String login, Set<Role> roles) {
 			super(request);
 			this.login = login;
 			this.roles = roles;

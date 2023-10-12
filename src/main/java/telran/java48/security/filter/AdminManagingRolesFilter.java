@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import telran.java48.security.model.Role;
 import telran.java48.security.model.User;
 
 @Component
@@ -26,7 +27,7 @@ public class AdminManagingRolesFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		if (checkEndPoint(request.getMethod(), request.getServletPath())) {
 			User user = (User) request.getUserPrincipal();
-			if(!user.getRoles().contains("ADMINISTRATOR")) {
+			if(!user.getRoles().contains(Role.ADMINISTRATOR)) {
 				response.sendError(403, "Permission denied");
 				return;
 			}
