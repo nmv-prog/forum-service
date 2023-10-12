@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
-import telran.java48.security.model.Role;
 
 @Getter
 @AllArgsConstructor
@@ -16,5 +15,5 @@ import telran.java48.security.model.Role;
 public class RolesDto {
 	String login;
 	@Singular
-	Set<Role> roles;
+	Set<String> roles;
 }

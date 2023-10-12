@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -50,7 +51,7 @@ public class AuthenticationFilter implements Filter {
 					if (!BCrypt.checkpw(credentials[1], userAccount.getPassword())) {
 						throw new RuntimeException();
 					}
-					user = new User(userAccount.getLogin(), userAccount.getRoles());
+					user = new User(userAccount.getLogin(), userAccount.getRoles().stream().map(Role::valueOf).collect(Collectors.toSet()));
 					securityContext.addUserSession(sessionId, user);
 				} catch (RuntimeException e) {
 					response.sendError(401);
