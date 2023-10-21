@@ -1,5 +1,8 @@
 package telran.java48.security;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +28,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				.stream()
 				.map(r -> "ROLE_" + r.toUpperCase())
 				.toArray(String[]::new);
+		if(userAccount.getPasswordExpDate().isBefore(LocalDate.now())) {
+			roles = Arrays.copyOf(roles, roles.length + 1);
+            roles[roles.length - 1] = "ROLE_PASSWORD_EXPIRED";
+		}
 		return new User(username, userAccount.getPassword(), AuthorityUtils.createAuthorityList(roles));
 	}
 

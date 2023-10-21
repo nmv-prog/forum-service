@@ -18,4 +18,5 @@ public class UserDto {
 	String lastName;
 	@Singular
 	Set<String> roles;
+	
 }
